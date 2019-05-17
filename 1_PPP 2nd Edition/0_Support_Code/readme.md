@@ -18,5 +18,4 @@ fltkimages.lib
 ```
 
 ## Known bugs
-* We should set color when creating any objects. There's no default color in constructor.
 * May get compile error on *nix system.
