@@ -4,7 +4,6 @@
 * For Visual Studio 2015 or up, We'll get WIN32 not defined error, just change it to _WIN32, because WIN32 is removed. I attached modified fltk library.
 * For Visual Studio, we have to include this libraries to compile Graphics Part.
 
-
 On debug mode
 ```
 fltkd.lib
@@ -17,3 +16,7 @@ fltk.lib
 fltkjpeg.lib
 fltkimages.lib
 ```
+
+## Known bugs
+* We should set color when creating any objects. There's no default color in constructor.
+* May get compile error on *nix system.
