@@ -1,0 +1,4 @@
+#ifndef DEFLATE_LZ77_H
+#define DEFLATE_LZ77_H
+
+#endif //DEFLATE_LZ77_H

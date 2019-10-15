@@ -1,0 +1,4 @@
+#ifndef DEFLATE_HUFFMAN_H
+#define DEFLATE_HUFFMAN_H
+
+#endif //DEFLATE_HUFFMAN_H
