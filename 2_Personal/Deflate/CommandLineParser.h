@@ -11,7 +11,10 @@ private:
 public:
     CommandLineParser(int c, char** v) : argc{c}, argv{v} {};
     void doParse() {
-        if(argc == 1) printUsage();
+        if(argc == 1) {
+            std::cout << "Deflate: ERROR: Insufficient Argument Provided" << std::endl;
+            printUsage();
+        }
     };
 
     std::string getNextCommand() {
@@ -20,10 +23,10 @@ public:
 
     void printUsage(){
         std::cout << "Usage" << std::endl
-        << "ZIP Compress" << std::endl << "Deflate --compress <files_to_compress> --zip" << std::endl << std::endl
-        << "GZip Compress" << std::endl << "Deflate --compress <files_to_compress> --gzip" << std::endl << std::endl
+        << "ZIP Compress\nDeflate --compress <files_to_compress> --zip" << std::endl << std::endl
+        << "GZip Compress\nDeflate --compress <files_to_compress> --gzip" << std::endl << std::endl
         << "If no file format is provided, the default is ZIP Compress" << std::endl << std::endl
-        << "Decompress" << std:: endl << "Deflate --decompress <file_to_decompress>" << std::endl;
+        << "Decompress\nDeflate --decompress <file_to_decompress>" << std::endl;
     }
 };
 
