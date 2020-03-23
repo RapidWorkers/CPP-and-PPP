@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.902
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AReMu_GBA", "AReMu_GBA\AReMu_GBA.vcxproj", "{6CCE309D-3695-48BD-84BD-CE5A542273C3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6CCE309D-3695-48BD-84BD-CE5A542273C3}.Debug|x64.ActiveCfg = Debug|x64
+		{6CCE309D-3695-48BD-84BD-CE5A542273C3}.Debug|x64.Build.0 = Debug|x64
+		{6CCE309D-3695-48BD-84BD-CE5A542273C3}.Release|x64.ActiveCfg = Release|x64
+		{6CCE309D-3695-48BD-84BD-CE5A542273C3}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2B7D0DCE-9188-4459-8A33-4D68A8AF8E64}
+	EndGlobalSection
+EndGlobal

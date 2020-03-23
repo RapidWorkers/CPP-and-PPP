@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AReMu_GBAClass</class>
+ <widget class="QMainWindow" name="AReMu_GBAClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>531</width>
+    <height>395</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>AReMu_GBA</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QOpenGLWidget" name="gameWindow">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>240</width>
+      <height>160</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTreeWidget" name="registerStatus">
+    <property name="geometry">
+     <rect>
+      <x>240</x>
+      <y>30</y>
+      <width>291</width>
+      <height>301</height>
+     </rect>
+    </property>
+    <column>
+     <property name="text">
+      <string>Registers</string>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string>Value</string>
+     </property>
+    </column>
+    <item>
+     <property name="text">
+      <string>Current</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>R0</string>
+      </property>
+      <property name="text">
+       <string>0x00000000</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R2</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R3</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R5</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R6</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R7</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R8</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R9</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R10</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R11</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R12</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R13</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R14</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R15</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>CPSR</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>N</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Z</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>C</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>V</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Q</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>I</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>F</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>T</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>M</string>
+       </property>
+      </item>
+     </item>
+     <item>
+      <property name="text">
+       <string>SPSR</string>
+      </property>
+     </item>
+    </item>
+    <item>
+     <property name="text">
+      <string>User/System</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Fast Interrupt</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Interrupt</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Supervisor</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Abort</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Undefined</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Internal</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>PC</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Cycles</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Mode</string>
+      </property>
+     </item>
+    </item>
+   </widget>
+   <widget class="QLabel" name="currInstr">
+    <property name="geometry">
+     <rect>
+      <x>250</x>
+      <y>10</y>
+      <width>271</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ARM7TDMI Emulator TEST (GBA Only)</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="logBox">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>160</y>
+      <width>241</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="plainText">
+     <string>Copyright S.Kim, all rights reserved
+-----------------------------
+AReMu - an ARMv4 emulator
+mainly on GameBoy Advance
+-----------------------------</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>531</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile_F">
+    <property name="title">
+     <string>File(&amp;F)</string>
+    </property>
+    <addaction name="actionOpen_ROM_O"/>
+    <addaction name="actionSoftreset_R"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave_Memory_S"/>
+    <addaction name="actionLoad_Memory_L"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit_E"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp_H">
+    <property name="title">
+     <string>Help(&amp;H)</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuDebug_D">
+    <property name="title">
+     <string>Debug(&amp;D)</string>
+    </property>
+    <addaction name="actionMemory_M"/>
+    <addaction name="actionROM_Viewer_R"/>
+    <addaction name="actionDisassembly_B"/>
+    <addaction name="separator"/>
+    <addaction name="actionCheats_C"/>
+   </widget>
+   <widget class="QMenu" name="menuInterpret_I">
+    <property name="title">
+     <string>Interpret(&amp;I)</string>
+    </property>
+   </widget>
+   <addaction name="menuFile_F"/>
+   <addaction name="menuInterpret_I"/>
+   <addaction name="menuDebug_D"/>
+   <addaction name="menuHelp_H"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRUN_R"/>
+   <addaction name="actionPAUSE_P"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOpen_ROM_O">
+   <property name="text">
+    <string>Open ROM(&amp;O)</string>
+   </property>
+  </action>
+  <action name="actionSoftreset_R">
+   <property name="text">
+    <string>Softreset(&amp;R)</string>
+   </property>
+  </action>
+  <action name="actionExit_E">
+   <property name="text">
+    <string>Exit(&amp;X)</string>
+   </property>
+  </action>
+  <action name="actionMemory_M">
+   <property name="text">
+    <string>Memory(&amp;M)</string>
+   </property>
+  </action>
+  <action name="actionROM_Viewer_R">
+   <property name="text">
+    <string>ROM Viewer(&amp;R)</string>
+   </property>
+  </action>
+  <action name="actionCheats_C">
+   <property name="text">
+    <string>Cheats(&amp;C)</string>
+   </property>
+  </action>
+  <action name="actionSave_Memory_S">
+   <property name="text">
+    <string>Save Memory(&amp;S)</string>
+   </property>
+  </action>
+  <action name="actionLoad_Memory_L">
+   <property name="text">
+    <string>Load Memory(&amp;L)</string>
+   </property>
+  </action>
+  <action name="actionDisassembly_B">
+   <property name="text">
+    <string>Disassembly(&amp;B)</string>
+   </property>
+  </action>
+  <action name="actionRUN_R">
+   <property name="text">
+    <string>RUN(&amp;R)</string>
+   </property>
+  </action>
+  <action name="actionPAUSE_P">
+   <property name="text">
+    <string>PAUSE(&amp;P)</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="AReMu_GBA.qrc"/>
+ </resources>
+ <connections/>
+</ui>

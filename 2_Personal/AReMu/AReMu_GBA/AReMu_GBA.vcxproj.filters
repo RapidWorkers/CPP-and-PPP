@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Form Files">
+      <UniqueIdentifier>{99349809-55BA-4b9d-BF79-8FDBB0286EB3}</UniqueIdentifier>
+      <Extensions>ui</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{D9D6E242-F8AF-46E4-B9FD-80ECBC20BA3E}</UniqueIdentifier>
+      <Extensions>qrc;*</Extensions>
+      <ParseFiles>false</ParseFiles>
+    </Filter>
+    <Filter Include="Source Files\CPUEngine">
+      <UniqueIdentifier>{3b4de53c-4ab8-4937-8ace-1d20af9bcca4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CPUEngine\interpreter">
+      <UniqueIdentifier>{0490374f-e778-4ba8-9886-5bf3a5ab092d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CPUEngine">
+      <UniqueIdentifier>{0adbd81a-4c4e-458b-afe7-cd2d89f18a51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CPUEngine\interpreter">
+      <UniqueIdentifier>{e77da849-cea0-475b-b45f-7c150f8048d6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AReMu_GBA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CPUEngine\interpreter\arm7tdmi_interpreter.cpp">
+      <Filter>Source Files\CPUEngine\interpreter</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="AReMu_GBA.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+  </ItemGroup>
+  <ItemGroup>
+    <QtUic Include="AReMu_GBA.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
+  </ItemGroup>
+  <ItemGroup>
+    <QtRcc Include="AReMu_GBA.qrc">
+      <Filter>Resource Files</Filter>
+    </QtRcc>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CPUEngine\interpreter\arm7tdmi_interpreter.h">
+      <Filter>Header Files\CPUEngine\interpreter</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

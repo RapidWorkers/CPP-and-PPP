@@ -12,7 +12,8 @@ void LZ77::encode() {
 
         //check for any prefix exists in view window
         for(int i = BLOCKSZ - currViewSize; i < BLOCKSZ; i++){
-
+            if(slidingWnd[i] == slidingWnd[length]) length++;//if match => increase length
+            else break;//if not match, break
         }
 
         //out to vector
@@ -23,12 +24,6 @@ void LZ77::encode() {
         //slide left the window
         this->slideWnd(1);
 
-        //fill buffer
-        if(!inFile.eof())
-            inFile.read(slidingWnd+BLOCKSZ*2-1, 1);//read single byte
-        else
-            currLAWndSize--;
-
     }
 
     //flush data
@@ -37,7 +32,11 @@ void LZ77::encode() {
 }
 
 void LZ77::slideWnd(int amount) {
-
+    //fill buffer
+    if(!inFile.eof())
+        inFile.read(slidingWnd+BLOCKSZ*2-amount, amount);
+    else
+        currLAWndSize-=amount;
 }
 
 void LZ77::writeResult() {
