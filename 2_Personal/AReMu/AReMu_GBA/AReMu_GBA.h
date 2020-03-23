@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QtWidgets/QMainWindow>
-#include <qfiledialog.h>
-#include <qmessagebox.h>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMessageBox>
 #include "ui_AReMu_GBA.h"
 #include "CPUEngine/interpreter/arm7tdmi_interpreter.h"
 

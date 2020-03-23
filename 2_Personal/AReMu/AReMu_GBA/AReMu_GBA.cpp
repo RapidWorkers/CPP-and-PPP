@@ -22,7 +22,7 @@ void AReMu_GBA::initCPU()
 	qApp->processEvents();
 	CPU->loadToMem("./gba_bios.bin", 0x00000000);
 
-	ui.logBox->appendPlainText("Allocating Essential Space");
+	ui.logBox->appendPlainText("Allocating Essential Space (34MB)");
 	qApp->processEvents();
 	CPU->allocateMEM(0x02000000, 256, CPU->MEM_KBYTE);	//WRAM - Onboard
 	CPU->allocateMEM(0x03000000, 32, CPU->MEM_KBYTE);	//WRAM - InChip
@@ -46,6 +46,12 @@ void AReMu_GBA::startGBA()
 		return;
 	}
 
+	ui.logBox->appendPlainText("Setting up ROM insert flag");
+	//qApp->processEvents();
+	//CPU->writeMem()
+
+	ui.logBox->appendPlainText("Starting CPU...");
+	qApp->processEvents();
 	CPU->startCPU();
 }
 
@@ -58,6 +64,8 @@ void AReMu_GBA::OpenROM() {
 		ui.logBox->appendPlainText("Please wait....");
 		qApp->processEvents();
 		CPU->loadToMem(romPath.toStdString(), 0x08000000);
+		ui.logBox->appendPlainText("Copying done");
+		qApp->processEvents();
 	}
 
 }

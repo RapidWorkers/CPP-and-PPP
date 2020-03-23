@@ -1,9 +1,15 @@
 #pragma once
+
+#ifndef BYTE
 #define BYTE unsigned char
+#endif
 
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <vector>
+#include <thread>
+#include <functional>
 
 using namespace std;
 
@@ -35,7 +41,8 @@ private:
 
 	size_t maxMapCnt;
 	size_t currMapCnt = 2;
-	MEM_MAP *memoryMAP;
+	vector<MEM_MAP> memoryMAP;
+	bool retriveMAP(unsigned int addr, MEM_MAP*& map);
 
 	int targetCLK;//target Clock Cycle in Hz
 	int currentTick = 0;
@@ -52,10 +59,13 @@ private:
 	bool isOnThumb() { return (cpsr >> 5) & 0x01; }
 
 	void interpret();
+	int cpuThreadHandler();
 
 public:
 	enum ARM7_MEM_SIZE {MEM_BYTE, MEM_KBYTE, MEM_MBYTE};
-	arm7tdmi_interpreter(int CLK = 16780000, size_t maxMapCnt = 10, int accuracy = 60);
+
+	arm7tdmi_interpreter(int CLK = 16780000, int accuracy = 60);
+	~arm7tdmi_interpreter();
 
 	void allocateMEM(unsigned int mapAddr, size_t memSize, ARM7_MEM_SIZE sz_unit);
 	bool loadToMem(string filepath, unsigned int memAddr);

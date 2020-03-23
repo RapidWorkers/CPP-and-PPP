@@ -18,14 +18,32 @@ void arm7tdmi_interpreter::allocateMEM(unsigned int mapAddr, size_t memSize, ARM
 		break;
 	}
 
-	memoryMAP[currMapCnt].mem = new BYTE[memSize];
-	memoryMAP[currMapCnt].memSize = memSize;
-	memoryMAP[currMapCnt++].mapAddr = mapAddr;
+	MEM_MAP tmp_mmap;
+
+	tmp_mmap.mem = new BYTE[memSize];
+	tmp_mmap.memSize = memSize;
+	tmp_mmap.mapAddr = mapAddr;
+
+	memoryMAP.push_back(tmp_mmap);
 
 	//zeroing memory
-	memset(memoryMAP[currMapCnt - 1].mem, 0x00, memSize);
+	memset(tmp_mmap.mem, 0x00, memSize);
 
 	//if (MEM == nullptr) exit(1);
+}
+
+bool arm7tdmi_interpreter::retriveMAP(unsigned int addr, MEM_MAP*& map)
+{
+	//find memory map by address
+	map = nullptr;
+	for (size_t i = 0; i < memoryMAP.size(); i++) {
+		if (addr >= memoryMAP[i].mapAddr && addr <= memoryMAP[i].mapAddr + memoryMAP[i].memSize) {
+			map = &memoryMAP[i];
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void arm7tdmi_interpreter::changeRegisterSet(int procMode)
@@ -111,9 +129,12 @@ inline bool arm7tdmi_interpreter::checkCond(char cond, bool C, bool N, bool Z, b
 
 void arm7tdmi_interpreter::interpret()
 {
-	//check ticks to limit the performance to target clock
-	if (currentTick >= targetCLK) return;
 	while (true) {
+		//check ticks to limit the performance to target clock
+		if (currentTick >= targetCLK) break;
+		//check pause
+		if (!processorStarted) break;
+
 		/*
 			Since, there're two operating modes
 				ARM mode (32bits instruction)
@@ -138,59 +159,190 @@ void arm7tdmi_interpreter::interpret()
 			bool C = (cpsr << 2) >> 31;
 			bool V = (cpsr << 3) >> 31;
 
+			//new flags
+			bool newC = 0, newN = 0, newZ = 0, newV = 0;
+
 			//Instruction parameters
 			char cond = instr >> 28;
 			int preOpCode = (instr << 4) >> 29;
 			int OpCode = (instr << 7) >> 28;
 			//int OpCode1 = (instr << 8) >> 28; //coprocessor
 
-			bool Link = (instr << 7) >> 31;
-			int bAddr = ((int)(instr << 8) >> 6) + r[15] + 4;
-
 			char Rn, Rd, Rs, Rm;
+			//Rn = (instr << 12) >> 28;
+			//Rd = (instr << 16) >> 28;
+			//Rs = (instr << 20) >> 28;
+			//Rm = instr & 0b1111;
 			char shamt, shift;
+			int shift_operand;
+
+			//shamt = (instr >> 7) & 0b11111;
+			//shift = (instr >> 5) & 0b11;
+
 			char rotate;
+			//rotate = (instr << 20) >> 28;
 			char Mask, SBO;
-			int immediate;
-			bool regList[16];
+			//Mask = (instr << 12) >> 28;
+			//SBO = (instr << 16) >> 28;
+			int imm_DP, imm_LDST;
+			//imm_DP = instr & 0xFF;
+			//imm_LDST = instr & 0xFFF;
+			int regList;
+			//regList = instr & 0xFFFF;
 			int swiNum;
+			//swiNum = instr & 0x00FFFFFF;
 
 			bool S, R;
+			S = (instr << 11) >> 31;
+
 			bool P, U, B, W, L;
 
 			//Check condition field
 			bool run = checkCond(cond, C, N, Z, V);
 
+			currentTick++;
+
 			if (!run) {
-				currentTick++;
 				continue;
 			}
 
 			//decode opcode
 			switch (preOpCode) {
-			case 0b000:
-				switch (OpCode) {
-				case 0:
-				case 1:
-				case 2:
-				case 3:
-				case 4:
-				case 5:
-				case 6:
-				case 7:
-				case 8:
-				case 9:
-				case 10:
-				case 11:
-				case 12:
-				case 13:
-				case 14:
-				case 15:
-				case 16:
+			case 0b000://data processing (shift values in register)
+				Rn = (instr << 12) >> 28;
+				Rd = (instr << 16) >> 28;
+				Rs = (instr << 20) >> 28;
+				Rm = instr & 0b1111;
+				shift = (instr >> 4) & 0b111;
+				shamt = (instr >> 7) & 0b11111;
+				//LSL = 00, LSR 01 ASR 10 RR 11
+				switch (shift) {
+				case 0b000:
+					shift_operand = *(REG[currentREG][Rn]) << shamt;
+					break;
+				case 0b010:
+					shift_operand = *(REG[currentREG][Rn]) >> shamt;
+					break;
+				case 0b100:
+					shift_operand = ((int)*(REG[currentREG][Rn])) >> shamt;
+					break;
+				case 0b110:
+					shift_operand = _rotr(*(REG[currentREG][Rn]), shamt);
+					break;
+				case 0b001:
+					shift_operand = *(REG[currentREG][Rn]) << *(REG[currentREG][Rm]);
+					break;
+				case 0b011:
+					shift_operand = *(REG[currentREG][Rn]) >> *(REG[currentREG][Rm]);
+					break;
+				case 0b101:
+					shift_operand = _rotr(*(REG[currentREG][Rn]), *(REG[currentREG][Rm]));
+					break;
+				case 0b111:
+					shift_operand = *(REG[currentREG][Rn]) >> *(REG[currentREG][Rm]);
 					break;
 				}
+				
+				switch (OpCode) {
+				case 0://AND
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) & shift_operand;
+					break;
+				case 1://EOR
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) ^ shift_operand;
+					break;
+				case 2://SUB
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) - shift_operand;
+					break;
+				case 3://RSB
+					*(REG[currentREG][Rd]) = shift_operand  - *(REG[currentREG][Rn]);
+					break;
+				case 4://ADD
+					*(REG[currentREG][Rd]) = shift_operand + *(REG[currentREG][Rn]);
+					break;
+				case 5://ADC
+					*(REG[currentREG][Rd]) = shift_operand + *(REG[currentREG][Rn]) + C;
+					break;
+				case 6://SBC
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) - shift_operand + C;
+					break;
+				case 7://RSC
+					*(REG[currentREG][Rd]) = shift_operand  - *(REG[currentREG][Rn]) + C;
+					break;
+				case 8://TST
+				case 9://TEQ
+				case 10://CMP
+				case 11://CMN
+					break;
+				case 12://ORR
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) | ~shift_operand;
+					break;
+				case 13://MOV
+					*(REG[currentREG][Rd]) = shift_operand;
+					break;
+				case 14://BIC
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) & ~shift_operand;
+					break;
+				case 15://MVN
+					*(REG[currentREG][Rd]) = ~shift_operand;
+					break;
+				}
+
+				if (S) {
+					if (*(REG[currentREG][Rd]) == 0) newZ = 1;
+					if (*(REG[currentREG][Rd]) >> 31) newN = 1;
+					
+					//update cpsr
+					cpsr = cpsr & 0x0FFFFFFF + (newN << 31) + (newZ << 30) + (newC << 29) + (newV << 28);
+				}
+
 				break;
-			case 0b001:
+
+			case 0b001://data processing immediate (shift immediate)
+				Rn = (instr << 12) >> 28;
+				Rd = (instr << 16) >> 28;
+				imm_DP = instr & 0xFF;
+				rotate = (instr << 20) >> 28;
+				shift_operand = _rotr(imm_DP, rotate * 2);
+				switch (OpCode) {
+				case 0://AND
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) & shift_operand;
+					break;
+				case 1://EOR
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) ^ shift_operand;
+					break;
+				case 2://SUB
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) - shift_operand;
+					break;
+				case 3://RSB
+					*(REG[currentREG][Rd]) = shift_operand - *(REG[currentREG][Rn]);
+					break;
+				case 4://ADD
+					*(REG[currentREG][Rd]) = shift_operand + *(REG[currentREG][Rn]);
+					break;
+				case 5://ADC
+					*(REG[currentREG][Rd]) = shift_operand + *(REG[currentREG][Rn]) + C;
+					break;
+				case 6://SBC
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) - shift_operand + C;
+					break;
+				case 7://RSC
+					*(REG[currentREG][Rd]) = shift_operand - *(REG[currentREG][Rn]) + C;
+					break;
+				case 8: case 9: case 10: case 11://Not defined
+					break;
+				case 12://ORR
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) | ~shift_operand;
+					break;
+				case 13://MOV
+					*(REG[currentREG][Rd]) = shift_operand;
+					break;
+				case 14://BIC
+					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) & ~shift_operand;
+					break;
+				case 15://MVN
+					*(REG[currentREG][Rd]) = ~shift_operand;
+					break;
+				}
 				break;
 			case 0b010:
 				break;
@@ -199,9 +351,9 @@ void arm7tdmi_interpreter::interpret()
 			case 0b100:
 				break;
 			case 0b101://branch
-				if (Link) *REG[currentREG][14] = r[15];
-				r[15] = bAddr;
-				currentTick += 2;//branch takes 2 cycle
+				if ((instr << 7) >> 31) *REG[currentREG][14] = r[15];//If Link
+				r[15] = ((int)(instr << 8) >> 6) + r[15] + 4;//Change PC
+				currentTick += 1;//branch takes 1 more cycle
 				break;
 			case 0b110:
 				break;
@@ -220,9 +372,21 @@ void arm7tdmi_interpreter::interpret()
 			r[15] += 2;//increase PC by 2
 		}
 	}
+	
+	processorStarted = false;
 }
 
-arm7tdmi_interpreter::arm7tdmi_interpreter(int CLK, size_t maxMapCnt, int accuracy) : targetCLK{ CLK }, maxMapCnt{ maxMapCnt }, clkAccuracy{ accuracy } {
+int arm7tdmi_interpreter::cpuThreadHandler()
+{
+	while (processorStarted) {
+		interpret();
+		resetTick();
+	}
+
+	return 0;
+}
+
+arm7tdmi_interpreter::arm7tdmi_interpreter(int CLK, int accuracy) : targetCLK{ CLK }, clkAccuracy{ accuracy } {
 	//setting up register banks
 	//System and User
 	for (int i = 0; i < 16; i++) {
@@ -257,10 +421,12 @@ arm7tdmi_interpreter::arm7tdmi_interpreter(int CLK, size_t maxMapCnt, int accura
 			REG[5][i] = r + 15;
 		}
 	}
+}
 
-	//allocating for memory map
-	memoryMAP = new MEM_MAP[maxMapCnt];
-
+arm7tdmi_interpreter::~arm7tdmi_interpreter()
+{
+	//TODO: destructor
+	//TODO: deallocate dynamic area
 }
 
 bool arm7tdmi_interpreter::loadToMem(string filepath, unsigned int memAddr)
@@ -269,15 +435,9 @@ bool arm7tdmi_interpreter::loadToMem(string filepath, unsigned int memAddr)
 
 	//find memory map by address
 	MEM_MAP *targetMap = nullptr;
-	for (size_t i = 0; i < this->currMapCnt; i++) {
-		if (memAddr >= memoryMAP[i].mapAddr && memAddr <= memoryMAP[i].mapAddr + memoryMAP[i].memSize) {
-			targetMap = memoryMAP + i;
-			break;
-		}
-	}
+	if (!retriveMAP(memAddr, targetMap)) return false;
 
-	if (targetMap == nullptr) return false;
-
+	//check if exceeding size
 	std::filesystem::path p = filepath;
 	if (memAddr + std::filesystem::file_size(p) > targetMap->mapAddr + targetMap->memSize) return false;
 
@@ -302,12 +462,7 @@ unsigned int arm7tdmi_interpreter::readMem(unsigned int rdAddr)
 {
 	//find memory map by address
 	MEM_MAP *targetMap = nullptr;
-	for (size_t i = 0; i < this->currMapCnt; i++) {
-		if (rdAddr >= memoryMAP[i].mapAddr && rdAddr <= memoryMAP[i].mapAddr + memoryMAP[i].memSize) {
-			targetMap = memoryMAP + i;
-			break;
-		}
-	}
+	if (!retriveMAP(rdAddr, targetMap)) return false;
 
 	if (targetMap == nullptr) return 0;//Just return 0 when error, there's no way to handle this
 	if (rdAddr + 4 > targetMap->mapAddr + targetMap->memSize) return 0;//Should not read when exceeding allocated area
@@ -321,12 +476,7 @@ void arm7tdmi_interpreter::writeMem(unsigned int wrAddr, unsigned int wrData)
 {
 	//find memory map by address
 	MEM_MAP *targetMap = nullptr;
-	for (size_t i = 0; i < this->currMapCnt; i++) {
-		if (wrAddr >= memoryMAP[i].mapAddr && wrAddr <= memoryMAP[i].mapAddr + memoryMAP[i].memSize) {
-			targetMap = memoryMAP + i;
-			break;
-		}
-	}
+	if (!retriveMAP(wrAddr, targetMap)) return;
 
 	if (targetMap == nullptr) return;//Just return 0 when error, there's no way to handle this
 	if (wrAddr + 4 > targetMap->mapAddr + targetMap->memSize) return;//Should not write when exceeding allocated area
@@ -345,10 +495,16 @@ void arm7tdmi_interpreter::writeMem8(unsigned int wrAddr, unsigned int wrData)
 
 void arm7tdmi_interpreter::startCPU(unsigned int entryPoint)
 {
+
+	if (processorStarted) return;
 	//set pc
 	r[15] = entryPoint;
-	interpret();
 
+	processorStarted = true;
+	thread cpuThread([this]() {cpuThreadHandler(); });
+
+	//launch background
+	cpuThread.detach();
 }
 
 void arm7tdmi_interpreter::pauseCPU()
