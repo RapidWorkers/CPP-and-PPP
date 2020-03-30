@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>331</height>
+    <width>789</width>
+    <height>494</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>280</width>
-      <height>280</height>
+      <width>361</width>
+      <height>451</height>
      </rect>
     </property>
     <property name="text">
@@ -30,17 +30,17 @@
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="label_2">
+   <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>420</x>
       <y>0</y>
-      <width>280</width>
-      <height>280</height>
+      <width>361</width>
+      <height>451</height>
      </rect>
     </property>
     <property name="text">
-     <string>Filtered</string>
+     <string>Original</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -52,7 +52,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>600</width>
+     <width>789</width>
      <height>21</height>
     </rect>
    </property>
@@ -61,7 +61,6 @@
      <string>File(&amp;F)</string>
     </property>
     <addaction name="actionOpen_O"/>
-    <addaction name="actionSave_S"/>
    </widget>
    <addaction name="menuFile_F"/>
   </widget>
@@ -72,17 +71,16 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionOriginal"/>
+   <addaction name="actionReset"/>
    <addaction name="actionBlur_Box"/>
+   <addaction name="actionBlur_Gaussian"/>
+   <addaction name="actionEdgeDetect_Light"/>
+   <addaction name="actionEdgeDetect_Medium"/>
+   <addaction name="actionEdgeDetect_Heavy"/>
   </widget>
   <action name="actionOpen_O">
    <property name="text">
     <string>Open(&amp;O)</string>
-   </property>
-  </action>
-  <action name="actionSave_S">
-   <property name="text">
-    <string>Save(&amp;S)</string>
    </property>
   </action>
   <action name="actionBlur_Box">
@@ -90,9 +88,29 @@
     <string>Blur (Box)</string>
    </property>
   </action>
-  <action name="actionOriginal">
+  <action name="actionReset">
    <property name="text">
-    <string>Original</string>
+    <string>Reset</string>
+   </property>
+  </action>
+  <action name="actionBlur_Gaussian">
+   <property name="text">
+    <string>Blur (Gaussian)</string>
+   </property>
+  </action>
+  <action name="actionEdgeDetect_Light">
+   <property name="text">
+    <string>EdgeDetect (Light)</string>
+   </property>
+  </action>
+  <action name="actionEdgeDetect_Medium">
+   <property name="text">
+    <string>EdgeDetect (Medium)</string>
+   </property>
+  </action>
+  <action name="actionEdgeDetect_Heavy">
+   <property name="text">
+    <string>EdgeDetect (Heavy)</string>
    </property>
   </action>
  </widget>

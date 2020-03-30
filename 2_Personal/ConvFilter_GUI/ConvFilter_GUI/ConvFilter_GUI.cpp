@@ -5,3 +5,5 @@ ConvFilter_GUI::ConvFilter_GUI(QWidget *parent)
 {
 	ui.setupUi(this);
 }
+
+

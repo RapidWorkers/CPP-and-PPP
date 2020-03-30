@@ -12,4 +12,8 @@ public:
 
 private:
 	Ui::ConvFilter_GUIClass ui;
+
+public slots:
+	void openImage();
+	void applyFilter()
 };
