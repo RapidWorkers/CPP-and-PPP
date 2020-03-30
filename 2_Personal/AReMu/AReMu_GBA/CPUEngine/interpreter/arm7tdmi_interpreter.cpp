@@ -46,7 +46,7 @@ bool arm7tdmi_interpreter::retriveMAP(unsigned int addr, MEM_MAP*& map)
 	return false;
 }
 
-void arm7tdmi_interpreter::changeRegisterSet(int procMode)
+inline void arm7tdmi_interpreter::changeRegisterSet(int procMode)
 {
 	switch (procMode) {
 	case ARM_USER:
@@ -73,8 +73,14 @@ void arm7tdmi_interpreter::changeRegisterSet(int procMode)
 	}
 }
 
-inline bool arm7tdmi_interpreter::checkCond(char cond, bool C, bool N, bool Z, bool V)
+inline bool arm7tdmi_interpreter::checkCond(char cond)
 {
+	//Comparison flags
+	bool N = cpsr >> 31;
+	bool Z = (cpsr << 1) >> 31;
+	bool C = (cpsr << 2) >> 31;
+	bool V = (cpsr << 3) >> 31;
+
 	switch (cond) {
 	case 0b0000:
 		return Z;
@@ -121,7 +127,7 @@ inline bool arm7tdmi_interpreter::checkCond(char cond, bool C, bool N, bool Z, b
 	case 0b1110://AL
 		return true;
 		break;
-	default://Undefined condition code
+	default://Undefined condition code -> skip code
 		return false;
 		break;
 	}
