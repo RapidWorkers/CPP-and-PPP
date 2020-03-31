@@ -54,7 +54,7 @@ private:
 
 	int currentREG = 0;
 	void changeRegisterSet(int procMode);
-	bool checkCond(char cond, bool C, bool N, bool Z, bool V);
+	bool checkCond(char cond);
 	ARM7_MODE getCurrentMode() { return (ARM7_MODE)(cpsr & 0b11111); }
 	bool isOnThumb() { return (cpsr >> 5) & 0x01; }
 
