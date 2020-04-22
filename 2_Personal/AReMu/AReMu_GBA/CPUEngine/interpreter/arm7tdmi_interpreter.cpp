@@ -166,7 +166,7 @@ void arm7tdmi_interpreter::interpret()
 			bool V = (cpsr << 3) >> 31;
 
 			//new flags
-			bool newC = 0, newN = 0, newZ = 0, newV = 0;
+			bool newC = C, newN = 0, newZ = 0, newV = V;
 
 			//Instruction parameters
 			char cond = instr >> 28;
@@ -203,6 +203,13 @@ void arm7tdmi_interpreter::interpret()
 
 			bool P, U, B, W, L;
 
+			//for comparison instructions (CMP, TST, ...)
+			bool isCmp = false;
+			int cmpVar;
+
+			//for calculating carry and overflow
+			unsigned long long tmpVar;
+
 			//Check condition field
 			bool run = checkCond(cond, C, N, Z, V);
 
@@ -225,6 +232,7 @@ void arm7tdmi_interpreter::interpret()
 				switch (shift) {
 				case 0b000:
 					shift_operand = *(REG[currentREG][Rn]) << shamt;
+					newC = (*(REG[currentREG][Rn]) << (shamt - 1)) >> 31;
 					break;
 				case 0b010:
 					shift_operand = *(REG[currentREG][Rn]) >> shamt;
@@ -237,18 +245,19 @@ void arm7tdmi_interpreter::interpret()
 					break;
 				case 0b001:
 					shift_operand = *(REG[currentREG][Rn]) << *(REG[currentREG][Rm]);
+					newC = (*(REG[currentREG][Rn]) << (*(REG[currentREG][Rm]) - 1)) >> 31;
 					break;
 				case 0b011:
 					shift_operand = *(REG[currentREG][Rn]) >> *(REG[currentREG][Rm]);
 					break;
 				case 0b101:
-					shift_operand = _rotr(*(REG[currentREG][Rn]), *(REG[currentREG][Rm]));
+					shift_operand = _rotr(*(REG[currentREG][Rn]), *(REG[currentREG][Rm]));//instrinsic, need to fixed later
 					break;
 				case 0b111:
 					shift_operand = *(REG[currentREG][Rn]) >> *(REG[currentREG][Rm]);
 					break;
 				}
-				
+
 				switch (OpCode) {
 				case 0://AND
 					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) & shift_operand;
@@ -257,27 +266,62 @@ void arm7tdmi_interpreter::interpret()
 					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) ^ shift_operand;
 					break;
 				case 2://SUB
-					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) - shift_operand;
+					tmpVar = *(REG[currentREG][Rn]) - shift_operand;
+					newC = tmpVar >> 32;
+					newV = ((*(REG[currentREG][Rn]) > 0) && (shift_operand < 0) && (tmpVar < 0)) || (*(REG[currentREG][Rn]) < 0) && (shift_operand > 0) && (tmpVar > 0);
+					*(REG[currentREG][Rd]) = tmpVar;
 					break;
 				case 3://RSB
-					*(REG[currentREG][Rd]) = shift_operand  - *(REG[currentREG][Rn]);
+					tmpVar = shift_operand  - *(REG[currentREG][Rn]);
+					newC = tmpVar >> 32;
+					newV = ((*(REG[currentREG][Rn]) < 0) && (shift_operand > 0) && (tmpVar < 0)) || (*(REG[currentREG][Rn]) > 0) && (shift_operand < 0) && (tmpVar > 0);
+					*(REG[currentREG][Rd]) = tmpVar;
 					break;
 				case 4://ADD
-					*(REG[currentREG][Rd]) = shift_operand + *(REG[currentREG][Rn]);
+					tmpVar = shift_operand + *(REG[currentREG][Rn]);
+					newC = tmpVar >> 32;
+					newV = ((*(REG[currentREG][Rn]) > 0) && (shift_operand > 0) && (tmpVar < 0)) || (*(REG[currentREG][Rn]) < 0) && (shift_operand < 0) && (tmpVar > 0);
+					*(REG[currentREG][Rd]) = tmpVar;
 					break;
 				case 5://ADC
-					*(REG[currentREG][Rd]) = shift_operand + *(REG[currentREG][Rn]) + C;
+					tmpVar = shift_operand + *(REG[currentREG][Rn]) + C;
+					newC = tmpVar >> 32;
+					//newV = ??
+					*(REG[currentREG][Rd]) = tmpVar;
 					break;
 				case 6://SBC
-					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) - shift_operand + C;
+					tmpVar = *(REG[currentREG][Rn]) - shift_operand + C;
+					newC = tmpVar >> 32;
+					//newV = ??
+					*(REG[currentREG][Rd]) = tmpVar;
 					break;
 				case 7://RSC
-					*(REG[currentREG][Rd]) = shift_operand  - *(REG[currentREG][Rn]) + C;
+					tmpVar = shift_operand  - *(REG[currentREG][Rn]) + C;
+					newC = tmpVar >> 32;
+					//newV = ??
+					*(REG[currentREG][Rd]) = tmpVar;
 					break;
 				case 8://TST
+					cmpVar = *(REG[currentREG][Rn]) & shift_operand;
+					isCmp = true;
+					break;
 				case 9://TEQ
+					cmpVar = *(REG[currentREG][Rn]) ^ shift_operand;
+					isCmp = true;
+					break;
 				case 10://CMP
+					tmpVar = *(REG[currentREG][Rn]) - shift_operand;
+					newC = tmpVar >> 32;
+					newV = ((*(REG[currentREG][Rn]) > 0) && (shift_operand < 0) && (tmpVar < 0)) || (*(REG[currentREG][Rn]) < 0) && (shift_operand > 0) && (tmpVar > 0);
+					cmpVar = tmpVar;
+					isCmp = true;
+					break;
 				case 11://CMN
+					tmpVar = *(REG[currentREG][Rn]) + shift_operand;
+					newC = tmpVar >> 32;
+					newV = ((*(REG[currentREG][Rn]) > 0) && (shift_operand > 0) && (tmpVar < 0)) || (*(REG[currentREG][Rn]) < 0) && (shift_operand < 0) && (tmpVar > 0);
+					cmpVar = tmpVar;
+					isCmp = true;
 					break;
 				case 12://ORR
 					*(REG[currentREG][Rd]) = *(REG[currentREG][Rn]) | ~shift_operand;
@@ -292,8 +336,15 @@ void arm7tdmi_interpreter::interpret()
 					*(REG[currentREG][Rd]) = ~shift_operand;
 					break;
 				}
+				
+				if(isCmp) {//comparison instr
+					if (cmpVar) == 0) newZ = 1;
+					if (cmpVar) >> 31) newN = 1;
 
-				if (S) {
+					//update cpsr
+					cpsr = cpsr & 0x0FFFFFFF + (newN << 31) + (newZ << 30) + (newC << 29) + (newV << 28);
+				}
+				else if (S) {//XXXS instructions
 					if (*(REG[currentREG][Rd]) == 0) newZ = 1;
 					if (*(REG[currentREG][Rd]) >> 31) newN = 1;
 					
