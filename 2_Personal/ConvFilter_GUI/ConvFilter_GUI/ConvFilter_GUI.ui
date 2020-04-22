@@ -40,7 +40,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Original</string>
+     <string>Filtered Image</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -77,6 +77,7 @@
    <addaction name="actionEdgeDetect_Light"/>
    <addaction name="actionEdgeDetect_Medium"/>
    <addaction name="actionEdgeDetect_Heavy"/>
+   <addaction name="actionmaxPool_2x2"/>
   </widget>
   <action name="actionOpen_O">
    <property name="text">
@@ -111,6 +112,11 @@
   <action name="actionEdgeDetect_Heavy">
    <property name="text">
     <string>EdgeDetect (Heavy)</string>
+   </property>
+  </action>
+  <action name="actionmaxPool_2x2">
+   <property name="text">
+    <string>maxPool(2x2)</string>
    </property>
   </action>
  </widget>
